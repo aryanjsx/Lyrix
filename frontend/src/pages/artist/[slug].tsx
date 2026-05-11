@@ -107,7 +107,7 @@ export default function ArtistPage() {
     );
   }
 
-  if (error || (!loading && !artist?.popularSongs?.length)) {
+  if (error || !artist || !artist.popularSongs.length) {
     return (
       <div className="min-h-screen">
         <SiteHeader />

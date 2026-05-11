@@ -45,7 +45,7 @@ async function getSimilarArtists(artistName: string): Promise<SimilarArtistEntry
 }
 
 router.get("/page/:slug", async (req: Request, res: Response): Promise<void> => {
-  const { slug } = req.params;
+  const slug = typeof req.params.slug === "string" ? req.params.slug : "";
 
   if (!slug || slug.length < 2) {
     res.status(400).json({ error: "Artist slug is required" });
