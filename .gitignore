@@ -1,0 +1,65 @@
+# Dependencies
+node_modules/
+
+# Environment files — NEVER commit these
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build outputs
+dist/
+.next/
+out/
+.vercel/
+
+# Prisma
+*.db
+**/prisma/*.db
+
+# IDE & Editor
+.vscode/
+.idea/
+.cursor/
+*.swp
+*.swo
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage & Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.tsbuildinfo
+.eslintcache
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# AI model files
+ai/models/*.pkl
+ai/models/*.joblib
+ai/models/*.npz
+
+# Load test results
+load-tests/results/

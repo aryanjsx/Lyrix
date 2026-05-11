@@ -1,0 +1,49 @@
+:root {
+  /* Dynamic — updated by JS when track changes */
+  --color-dominant: #1a1a2e;
+  --color-accent: #6c63ff;
+  --color-dominant-muted: rgba(26, 26, 46, 0.6);
+
+  /* Static base — dark theme */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #111118;
+  --bg-surface: rgba(255, 255, 255, 0.04);
+  --bg-surface-hover: rgba(255, 255, 255, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.06);
+  --bg-glass-strong: rgba(255, 255, 255, 0.12);
+
+  /* Text */
+  --text-primary: rgba(255, 255, 255, 0.92);
+  --text-secondary: rgba(255, 255, 255, 0.56);
+  --text-muted: rgba(255, 255, 255, 0.32);
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.12);
+
+  /* Blur */
+  --blur-sm: blur(8px);
+  --blur-md: blur(16px);
+  --blur-lg: blur(32px);
+
+  /* Shadows */
+  --shadow-player: 0 -8px 32px rgba(0, 0, 0, 0.6);
+
+  /* Timing */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* Now Playing page specific tokens */
+  --np-bg-base: #080810;
+  --np-surface: rgba(255, 255, 255, 0.04);
+  --np-surface-hover: rgba(255, 255, 255, 0.08);
+  --np-text-primary: rgba(255, 255, 255, 0.92);
+  --np-text-secondary: rgba(255, 255, 255, 0.5);
+  --np-text-muted: rgba(255, 255, 255, 0.3);
+  --np-text-hint: rgba(255, 255, 255, 0.22);
+  --np-color-dominant: #1a1060;
+  --np-color-accent: #a78bfa;
+  --np-color-dominant-muted: rgba(26, 16, 96, 0.65);
+  --np-duration-color: 1200ms;
+}
