@@ -67,7 +67,7 @@ export const getServerSideProps: GetServerSideProps<{ homepage: HomepageData | n
     const langParam = languages ? `?languages=${encodeURIComponent(languages)}` : "";
     const res = await fetch(`${API_URL}/api/homepage${langParam}`, {
       headers: { Accept: "application/json" },
-      signal: AbortSignal.timeout(600),
+      signal: AbortSignal.timeout(5000),
     });
 
     if (!res.ok) {
