@@ -108,7 +108,7 @@ async function checkDatabase(): Promise<CheckResult> {
   try {
     await prisma.$queryRaw`SELECT 1`;
     const latency = Date.now() - start;
-    return { status: latency > 500 ? "slow" : "ok", latency_ms: latency };
+    return { status: latency > 2000 ? "slow" : "ok", latency_ms: latency };
   } catch (err: unknown) {
     return { status: "down", latency_ms: -1, error: (err as Error).message };
   }
@@ -123,7 +123,7 @@ async function checkRedis(): Promise<CheckResult> {
     }
     await client.ping();
     const latency = Date.now() - start;
-    return { status: latency > 100 ? "slow" : "ok", latency_ms: latency };
+    return { status: latency > 1000 ? "slow" : "ok", latency_ms: latency };
   } catch (err: unknown) {
     return { status: "down", latency_ms: -1, error: (err as Error).message };
   }
@@ -148,7 +148,7 @@ async function checkYouTubeQuota(): Promise<CheckResult> {
 }
 
 async function healthCheck(_req: import("express").Request, res: import("express").Response) {
-  const TIMEOUT_MS = 150;
+  const TIMEOUT_MS = 5000;
 
   const withTimeout = <T>(p: Promise<T>, fallback: T): Promise<T> =>
     Promise.race([

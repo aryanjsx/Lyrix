@@ -3,25 +3,25 @@
 ## Monitors to Create
 
 ### 1. Backend API Health
-- URL: `https://api.lyrix.app/health`
+- URL: `https://lyrix-7nz2.onrender.com/health`
 - Method: GET
 - Check interval: 1 minute
 - Alert if: status != 200 OR response time > 3s
 - Alert contacts: [your email / Slack webhook]
 
 ### 2. Frontend (Vercel)
-- URL: `https://lyrix.app`
+- URL: `https://elyrix.vercel.app`
 - Method: GET
 - Check interval: 1 minute
 
 ### 3. Search API
-- URL: `https://api.lyrix.app/api/search?q=test`
+- URL: `https://lyrix-7nz2.onrender.com/api/search?q=test`
 - Method: GET
 - Check interval: 5 minutes
 - Verify: response contains `"results"` key
 
 ### 4. Playback Metadata
-- URL: `https://api.lyrix.app/api/track/dQw4w9WgXcQ`
+- URL: `https://lyrix-7nz2.onrender.com/api/track/dQw4w9WgXcQ`
 - Method: GET
 - Check interval: 5 minutes
 

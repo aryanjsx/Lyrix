@@ -199,7 +199,7 @@ export default function App({ Component, pageProps }: AppProps) {
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta name="description" content="Music and podcast streaming" />
+        <meta name="description" content="Stream millions of songs, discover new artists, create playlists, and enjoy podcasts — all for free. No ads, no limits." />
       </Head>
 
       <DataModeProvider>
