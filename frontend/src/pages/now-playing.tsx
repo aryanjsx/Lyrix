@@ -60,6 +60,76 @@ function AmbientBackground({ thumbnail }: { thumbnail: string | null }) {
   );
 }
 
+function VideoTarget({ isMobile }: { isMobile: boolean }) {
+  const [hovered, setHovered] = useState(false);
+
+  const toggleFullscreen = useCallback(() => {
+    const container = document.getElementById("yt-player-container");
+    if (!container) return;
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else {
+      container.requestFullscreen().catch(() => {});
+    }
+  }, []);
+
+  return (
+    <motion.div
+      id="yt-video-target"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className="relative mb-6 w-full overflow-hidden rounded-2xl"
+      style={{
+        maxWidth: isMobile ? 340 : 480,
+        aspectRatio: "16/9",
+        border: "1px solid var(--np-border)",
+        background: "#000",
+        boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <AnimatePresence>
+        {hovered && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={toggleFullscreen}
+            aria-label="Enter fullscreen"
+            style={{
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              zIndex: 60,
+              background: "rgba(0, 0, 0, 0.6)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: 8,
+              color: "#fff",
+              padding: "7px 8px",
+              cursor: "pointer",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+              <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+              <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+              <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+            </svg>
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
 function ContextLabel() {
   return (
     <div
@@ -201,20 +271,7 @@ export default function NowPlayingPage() {
 
                 {/* Album Art or Video Target */}
                 {isVideoMode ? (
-                  <motion.div
-                    id="yt-video-target"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="mb-6 w-full overflow-hidden rounded-2xl"
-                    style={{
-                      maxWidth: isMobile ? 340 : 480,
-                      aspectRatio: "16/9",
-                      border: "1px solid var(--np-border)",
-                      background: "#000",
-                      boxShadow: "0 24px 80px rgba(0,0,0,0.6)",
-                    }}
-                  />
+                  <VideoTarget isMobile={isMobile} />
                 ) : (
                   <div
                     className="w-full"
