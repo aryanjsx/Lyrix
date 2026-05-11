@@ -87,20 +87,26 @@ export function ArtistHero({
           transition={{ duration: 0.3, delay: 0.25 }}
           className="mt-5 flex items-center gap-3"
         >
-          <button
+          <motion.button
             type="button"
             onClick={onPlayAll}
-            className="flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-colors hover:bg-white/90"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black shadow-lg shadow-white/10 transition-colors hover:bg-white/90"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <polygon points="6,3 20,12 6,21" />
             </svg>
             Play
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
             onClick={onShuffle}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className="flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm text-white/70 transition-colors hover:border-white/30 hover:text-white"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -109,11 +115,14 @@ export function ArtistHero({
               <line x1="4" y1="4" x2="9" y2="9" />
             </svg>
             Shuffle
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
             onClick={onRadio}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className="flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm text-white/70 transition-colors hover:border-white/30 hover:text-white"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -122,7 +131,7 @@ export function ArtistHero({
               <circle cx="12" cy="12" r="1" />
             </svg>
             Radio
-          </button>
+          </motion.button>
         </motion.div>
       </div>
     </div>

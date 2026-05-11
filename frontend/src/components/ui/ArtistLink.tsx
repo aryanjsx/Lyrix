@@ -10,9 +10,11 @@ interface ArtistLinkProps {
 
 export function ArtistLink({ name, className = "", style }: ArtistLinkProps) {
   if (!name) return null;
+  const slug = slugify(name);
+  if (!slug) return <span className={className} style={style}>{name}</span>;
   return (
     <Link
-      href={`/artist/${slugify(name)}`}
+      href={`/artist/${slug}`}
       onClick={(e) => e.stopPropagation()}
       className={`hover:underline hover:text-white transition-colors ${className}`}
       style={style}

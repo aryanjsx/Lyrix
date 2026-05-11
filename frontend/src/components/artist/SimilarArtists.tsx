@@ -16,7 +16,7 @@ export default function SimilarArtists({ artists }: SimilarArtistsProps) {
       <h2 className="mb-4 text-base font-medium text-white">Fans also like</h2>
 
       <div className="-mx-6 flex gap-4 overflow-x-auto px-6 pb-2 scrollbar-hide">
-        {artists.map((artist) => (
+        {artists.filter((a) => a.slug && a.name).map((artist) => (
           <Link
             key={artist.slug}
             href={`/artist/${artist.slug}`}
