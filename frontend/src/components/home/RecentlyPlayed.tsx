@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/services/fetchWithAuth";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { motion } from "framer-motion";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -143,9 +144,10 @@ export function RecentlyPlayed() {
                 >
                   {track.title}
                 </p>
-                <p className="truncate text-xs text-zinc-400">
-                  {track.channel}
-                </p>
+                <ArtistLink
+                  name={track.channel}
+                  className="truncate text-xs text-zinc-400 block"
+                />
               </div>
             </motion.button>
           );

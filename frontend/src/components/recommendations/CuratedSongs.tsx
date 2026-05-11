@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { type Track, useLyrixStore } from "@/store";
 import { searchTracks } from "@/services/api";
 import { motion } from "framer-motion";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 const REMIX_PATTERN = /remix|mashup|slowed\s*\+?\s*reverb|8d\s*audio|bass\s*boosted|nonstop|non[- ]?stop|dj\s*mix|megamix/i;
 
@@ -60,9 +61,10 @@ function SongCard({ track, index }: { track: Track; index: number }) {
         <p className={`truncate text-[13px] font-medium ${isPlaying ? "text-green-400" : "text-white"}`}>
           {track.title}
         </p>
-        <p className="truncate text-xs text-zinc-400">
-          {track.channel}
-        </p>
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

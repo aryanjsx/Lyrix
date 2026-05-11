@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useLyrixStore, type Track } from "@/store";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { PlaylistCover } from "@/components/playlist/PlaylistCover";
 import { motion } from "framer-motion";
@@ -198,7 +199,10 @@ export default function SharedPlaylistPage() {
                   <p className={`truncate text-sm font-medium ${isActive ? "text-purple-400" : "text-white"}`}>
                     {track.title}
                   </p>
-                  <p className="truncate text-xs text-zinc-400">{track.channel}</p>
+                  <ArtistLink
+                    name={track.channel}
+                    className="truncate text-xs text-zinc-400 block"
+                  />
                 </div>
                 <span className="flex-shrink-0 text-xs text-zinc-500">
                   {formatDuration(track.duration)}

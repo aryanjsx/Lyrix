@@ -3,6 +3,7 @@ import { useLyrixStore, type RecommendationTrack } from "@/store";
 import { fetchForYou } from "@/services/recommendationApi";
 import { motion } from "framer-motion";
 import { recommendationToTrack } from "@/utils/mappers";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 const LOAD_TIMEOUT_MS = 8_000;
 
@@ -46,9 +47,10 @@ function TrackTile({ track, index }: { track: RecommendationTrack; index: number
         <p className={`truncate text-sm font-medium ${isPlaying ? "text-green-400" : "text-white"}`}>
           {track.title}
         </p>
-        <p className="truncate text-xs text-zinc-400">
-          {track.channel}
-        </p>
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

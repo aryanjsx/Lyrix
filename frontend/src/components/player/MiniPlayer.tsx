@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { useLyrixStore } from "@/store";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import { radioService } from "@/services/radioService";
 import { usePlayer } from "@/hooks/usePlayer";
 import { useAlbumColors } from "@/hooks/useAlbumColors";
@@ -436,17 +436,14 @@ export function MiniPlayer() {
                   </div>
                 )}
                 {current?.channel ? (
-                  <Link
-                    href={`/artist/${encodeURIComponent(current.channel)}`}
-                    className="truncate text-xs hover:underline block"
+                  <ArtistLink
+                    name={stripDurationFromChannel(current.channel)}
+                    className="truncate text-xs block"
                     style={{
                       fontFamily: "var(--font-dm-sans, 'DM Sans'), sans-serif",
                       color: "var(--text-secondary)",
                     }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {stripDurationFromChannel(current.channel)}
-                  </Link>
+                  />
                 ) : (
                   <p
                     className="truncate text-xs"
@@ -635,6 +632,15 @@ export function MiniPlayer() {
                   </svg>
                   <span className="truncate">{radioService.getActive()?.seedLabel} Radio</span>
                 </div>
+              ) : current?.channel ? (
+                <ArtistLink
+                  name={stripDurationFromChannel(current.channel)}
+                  className="truncate text-xs block"
+                  style={{
+                    fontFamily: "var(--font-dm-sans, 'DM Sans'), sans-serif",
+                    color: "var(--text-secondary)",
+                  }}
+                />
               ) : (
                 <p
                   className="truncate text-xs"
@@ -643,7 +649,7 @@ export function MiniPlayer() {
                     color: "var(--text-secondary)",
                   }}
                 >
-                  {stripDurationFromChannel(current?.channel ?? "")}
+                  &nbsp;
                 </p>
               )}
             </div>

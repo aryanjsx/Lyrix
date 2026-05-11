@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import Link from "next/link";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import { PlaylistCover } from "@/components/playlist/PlaylistCover";
 import {
   DndContext,
@@ -703,7 +704,9 @@ function AddSongsPanel({
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-white">{track.title}</p>
-                <p className="truncate text-xs text-zinc-500">{track.channel} · {formatSearchDuration(track.duration)}</p>
+                <p className="truncate text-xs text-zinc-500">
+                  <ArtistLink name={track.channel} className="text-zinc-500" /> · {formatSearchDuration(track.duration)}
+                </p>
               </div>
               <button
                 type="button"

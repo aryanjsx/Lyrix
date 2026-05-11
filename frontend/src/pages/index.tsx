@@ -18,6 +18,7 @@ import { PodcastSection } from "@/components/recommendations/PodcastSection";
 import { TimeAwareSection } from "@/components/home/TimeAwareSection";
 import { DailyMixes } from "@/components/home/DailyMixes";
 import { RecentlyPlayed } from "@/components/home/RecentlyPlayed";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import { analytics, EVENTS } from "@/services/analyticsService";
 import { getTimeContext } from "@/services/timeContextService";
 import { motion } from "framer-motion";
@@ -247,9 +248,10 @@ function SSRTrackCard({ track, index }: { track: HomepageTrack; index: number })
         <p className={`truncate text-sm font-medium ${isPlaying ? "text-green-400" : "text-white"}`}>
           {track.title}
         </p>
-        <p className="truncate text-xs text-zinc-400">
-          {track.channel}
-        </p>
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

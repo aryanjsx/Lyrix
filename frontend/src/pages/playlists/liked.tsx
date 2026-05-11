@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/layout/SiteHeader";
 import { motion } from "framer-motion";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 export default function LikedSongsPage() {
   const router = useRouter();
@@ -141,7 +142,10 @@ export default function LikedSongsPage() {
                       <p className={`truncate text-sm font-medium ${isActive ? "text-purple-400" : "text-white"}`}>
                         {track.title}
                       </p>
-                      <p className="truncate text-xs text-zinc-400">{track.channel}</p>
+                      <ArtistLink
+                        name={track.channel}
+                        className="truncate text-xs text-zinc-400 block"
+                      />
                     </div>
 
                     <span className="hidden text-xs tabular-nums text-zinc-500 sm:block">

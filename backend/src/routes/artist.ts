@@ -1,11 +1,123 @@
 import { Router, Request, Response } from "express";
 import { searchArtistThumbnail, searchInnertube } from "../services/innertubeService";
 import { cacheGet, cacheSet } from "../services/cacheService";
+import { slugify, deslugify } from "../utils/slugify";
 
 const router = Router();
 
 const ARTIST_THUMB_TTL = 86400 * 7; // 7 days
 const ARTIST_DETAIL_TTL = 3600; // 1 hour
+
+interface ArtistTrack {
+  videoId: string;
+  title: string;
+  channel: string;
+  duration: number;
+  thumbnail: string;
+  category: string;
+  filterScore: number;
+}
+
+interface SimilarArtistEntry {
+  name: string;
+  slug: string;
+  thumbnail: string | null;
+}
+
+async function getSimilarArtists(artistName: string): Promise<SimilarArtistEntry[]> {
+  const results = await searchInnertube(`artists like ${artistName} similar music`);
+  const seen = new Set<string>();
+  return results
+    .filter((r) => {
+      const name = r.channel?.trim();
+      if (!name || name.toLowerCase() === artistName.toLowerCase()) return false;
+      const key = name.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 6)
+    .map((r) => ({
+      name: r.channel,
+      slug: slugify(r.channel),
+      thumbnail: r.thumbnail,
+    }));
+}
+
+router.get("/page/:slug", async (req: Request, res: Response): Promise<void> => {
+  const { slug } = req.params;
+
+  if (!slug || slug.length < 2) {
+    res.status(400).json({ error: "Artist slug is required" });
+    return;
+  }
+
+  if (slug.length > 120) {
+    res.status(400).json({ error: "Artist slug is too long" });
+    return;
+  }
+
+  const artistName = deslugify(slug);
+
+  res.setHeader("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=7200");
+
+  try {
+    const cacheKey = `artist:page:${slug}`;
+    const cached = await cacheGet<Record<string, unknown>>(cacheKey);
+    if (cached) {
+      res.setHeader("X-Cache", "HIT");
+      res.json(cached);
+      return;
+    }
+
+    const [popularSongs, albums, appearsOn, similarArtists, thumbnail] =
+      await Promise.allSettled([
+        searchInnertube(`${artistName} songs`),
+        searchInnertube(`${artistName} album official playlist`),
+        searchInnertube(`${artistName} feat featuring`),
+        getSimilarArtists(artistName),
+        searchArtistThumbnail(artistName),
+      ]);
+
+    const filterTracks = (
+      result: PromiseSettledResult<ArtistTrack[]>
+    ): ArtistTrack[] => {
+      if (result.status !== "fulfilled") return [];
+      return result.value.filter((t) => t.filterScore >= 60);
+    };
+
+    const popularFiltered = filterTracks(popularSongs);
+    const appearsOnFiltered = filterTracks(appearsOn);
+
+    const firstTrack = popularFiltered[0] ?? null;
+
+    const artistData = {
+      slug,
+      name: artistName,
+      avatar: thumbnail.status === "fulfilled" ? thumbnail.value : null,
+      bannerImage: firstTrack?.thumbnail ?? null,
+      popularSongs: popularFiltered.slice(0, 20),
+      albums:
+        albums.status === "fulfilled"
+          ? albums.value.slice(0, 8).map((a) => ({
+              id: a.videoId,
+              title: a.title,
+              thumbnail: a.thumbnail,
+            }))
+          : [],
+      appearsOn: appearsOnFiltered.slice(0, 10),
+      similarArtists:
+        similarArtists.status === "fulfilled" ? similarArtists.value : [],
+      fetchedAt: new Date().toISOString(),
+    };
+
+    res.setHeader("X-Cache", "MISS");
+    await cacheSet(cacheKey, artistData, ARTIST_DETAIL_TTL);
+    res.json(artistData);
+  } catch {
+    res.status(500).json({ error: "Failed to fetch artist page data" });
+  }
+});
 
 router.get("/detail", async (req: Request, res: Response): Promise<void> => {
   const name = typeof req.query.name === "string" ? req.query.name.trim() : "";
@@ -80,11 +192,11 @@ router.get("/thumbnail", async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const thumbnail = await searchArtistThumbnail(name);
+    const thumbnailUrl = await searchArtistThumbnail(name);
 
-    if (thumbnail) {
-      await cacheSet(cacheKey, thumbnail, ARTIST_THUMB_TTL);
-      res.json({ name, thumbnail });
+    if (thumbnailUrl) {
+      await cacheSet(cacheKey, thumbnailUrl, ARTIST_THUMB_TTL);
+      res.json({ name, thumbnail: thumbnailUrl });
     } else {
       res.json({ name, thumbnail: null });
     }
@@ -122,11 +234,11 @@ router.get("/thumbnails", async (req: Request, res: Response): Promise<void> => 
         results[name] = cached;
         return;
       }
-      const thumbnail = await searchArtistThumbnail(name);
-      if (thumbnail) {
-        await cacheSet(cacheKey, thumbnail, ARTIST_THUMB_TTL);
+      const thumbnailUrl = await searchArtistThumbnail(name);
+      if (thumbnailUrl) {
+        await cacheSet(cacheKey, thumbnailUrl, ARTIST_THUMB_TTL);
       }
-      results[name] = thumbnail;
+      results[name] = thumbnailUrl;
     });
 
     await Promise.allSettled(lookups);

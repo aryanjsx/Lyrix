@@ -4,6 +4,7 @@ import {
   saveTrackToLibrary as apiSaveTrack,
   unsaveTrackFromLibrary as apiUnsaveTrack,
 } from "@/services/playlistApi";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 function PlaybackModeToggle() {
   const mode = useLyrixStore((s) => s.player.mode);
@@ -106,12 +107,15 @@ export function TrackInfo() {
 
       {/* Artist + Album */}
       <p className="mt-2 text-sm" style={{ fontFamily: "var(--font-dm-sans, 'DM Sans'), sans-serif" }}>
-        <span
-          className="cursor-pointer transition-all hover:underline"
-          style={{ color: "var(--np-text-secondary)" }}
-        >
-          {stripDurationFromChannel(current?.channel ?? "")}
-        </span>
+        {current?.channel ? (
+          <ArtistLink
+            name={stripDurationFromChannel(current.channel)}
+            className="cursor-pointer"
+            style={{ color: "var(--np-text-secondary)" }}
+          />
+        ) : (
+          <span style={{ color: "var(--np-text-secondary)" }}>&nbsp;</span>
+        )}
       </p>
 
       {/* Action Row */}

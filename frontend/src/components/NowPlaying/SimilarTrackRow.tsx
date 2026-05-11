@@ -4,6 +4,7 @@ import { useLyrixStore, type RecommendationTrack } from "@/store";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { detectGenre, detectLanguage } from "@/services/trackMetadataService";
 import { getPreferredLanguage } from "@/hooks/usePreferredLanguage";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -69,15 +70,14 @@ export function SimilarTrackRow({ track, isCurrent, onPlay, onAdd }: SimilarTrac
         >
           {track.title}
         </p>
-        <p
-          className="truncate text-xs"
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs block"
           style={{
             fontFamily: "var(--font-dm-sans, 'DM Sans'), sans-serif",
             color: "var(--np-text-secondary)",
           }}
-        >
-          {track.channel}
-        </p>
+        />
       </div>
 
       {/* Actions — visible on hover */}

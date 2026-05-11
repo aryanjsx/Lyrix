@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { useLyrixStore, type Track } from "@/store";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 function EqBars() {
   return (
@@ -163,9 +164,11 @@ export function NowPlayingQueue() {
             }}>
               {track.title}
             </div>
-            <div style={{ fontSize: 11, color: "var(--np-text-hint)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {track.channel}
-            </div>
+            <ArtistLink
+              name={track.channel}
+              className="block"
+              style={{ fontSize: 11, color: "var(--np-text-hint)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+            />
           </div>
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             {i > 0 && <MoveButton direction="up" onClick={() => handleMove(i, i - 1)} />}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { type Track, useLyrixStore } from "@/store";
 import { searchTracks } from "@/services/api";
 import { motion } from "framer-motion";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 interface PodcastCategory {
   id: string;
@@ -90,9 +91,10 @@ function PodcastCard({ track, index }: { track: Track; index: number }) {
         <p className={`line-clamp-2 text-[13px] font-medium leading-tight ${isPlaying ? "text-green-400" : "text-white"}`}>
           {track.title}
         </p>
-        <p className="mt-0.5 truncate text-xs text-zinc-400">
-          {track.channel}
-        </p>
+        <ArtistLink
+          name={track.channel}
+          className="mt-0.5 truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

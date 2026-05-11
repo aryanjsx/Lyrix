@@ -4,6 +4,7 @@ import { fetchTrending } from "@/services/recommendationApi";
 import { loadGuestPrefs } from "@/config/languages";
 import { motion } from "framer-motion";
 import { recommendationToTrack } from "@/utils/mappers";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 const LOAD_TIMEOUT_MS = 10_000;
 
@@ -47,9 +48,10 @@ function TrendingCard({ track, index }: { track: RecommendationTrack; index: num
         <p className={`truncate text-sm font-medium ${isPlaying ? "text-green-400" : "text-white"}`}>
           {track.title}
         </p>
-        <p className="truncate text-xs text-zinc-400">
-          {track.channel}
-        </p>
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 import { fetchWithAuth } from "@/services/fetchWithAuth";
+import { slugify } from "@/lib/slugify";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
@@ -111,7 +112,7 @@ function ArtistCard({
   const gradient = getGradient(index);
 
   const handleClick = () => {
-    void router.push(`/?q=${encodeURIComponent(pick.query)}`);
+    void router.push(`/artist/${slugify(pick.label)}`);
   };
 
   return (

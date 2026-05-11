@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { Track, useLyrixStore } from "@/store";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import { submitFeedback } from "@/services/authApi";
 import { radioService } from "@/services/radioService";
 import { shareService } from "@/services/shareService";
@@ -129,14 +129,11 @@ export function TrackCard({ track }: TrackCardProps) {
           <h3 className="truncate text-sm font-medium" style={{ color: "var(--text-primary)" }}>
             {track.title}
           </h3>
-          <Link
-            href={`/artist/${encodeURIComponent(track.channel)}`}
-            onClick={(e) => e.stopPropagation()}
-            className="truncate text-xs hover:underline block"
+          <ArtistLink
+            name={track.channel}
+            className="truncate text-xs block"
             style={{ color: "var(--text-secondary)" }}
-          >
-            {track.channel}
-          </Link>
+          />
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <span
               className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${

@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSWR from "swr";
 import { motion } from "framer-motion";
 import { useLyrixStore, type RecommendationTrack } from "@/store";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 import {
   getTimeContext,
   getMinutesUntilNextSlot,
@@ -87,7 +88,10 @@ function TrackTile({
         >
           {track.title}
         </p>
-        <p className="truncate text-xs text-zinc-400">{track.channel}</p>
+        <ArtistLink
+          name={track.channel}
+          className="truncate text-xs text-zinc-400 block"
+        />
       </div>
     </motion.button>
   );

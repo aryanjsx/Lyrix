@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
 import { CSS } from "@dnd-kit/utilities";
 import { formatDuration } from "@/utils/format";
+import { ArtistLink } from "@/components/ui/ArtistLink";
 
 export interface PlaylistTrackRowProps {
   track: {
@@ -101,9 +102,10 @@ export function PlaylistTrackRow({
           <p className="truncate text-sm font-medium text-white group-hover:text-white">
             {meta.title}
           </p>
-          <p className="truncate text-xs text-zinc-400">
-            {meta.channel}
-          </p>
+          <ArtistLink
+            name={meta.channel}
+            className="truncate text-xs text-zinc-400 block"
+          />
         </div>
       </button>
 
