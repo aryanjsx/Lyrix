@@ -124,7 +124,7 @@ export async function handleGoogleCallback(
     ) {
       res.clearCookie(RETURN_PLAYLIST_ID_COOKIE, cookieOpts);
       res.redirect(
-        `${config.frontendUrl}/playlists/${returnPlaylistId}?sync=enabled`
+        `${config.frontendUrl}/playlists/${returnPlaylistId}?sync=enabled&token=${jwtToken}`
       );
       return;
     }
@@ -133,7 +133,7 @@ export async function handleGoogleCallback(
       res.clearCookie(RETURN_PLAYLIST_ID_COOKIE, cookieOpts);
     }
 
-    res.redirect(`${config.frontendUrl}?auth=success`);
+    res.redirect(`${config.frontendUrl}?auth=success&token=${jwtToken}`);
   } catch (err) {
     captureError(err as Error);
     console.error("[Auth] Callback error:", err);
