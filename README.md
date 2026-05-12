@@ -30,6 +30,7 @@ A full-stack music streaming application built on top of the YouTube ecosystem. 
 - **Podcast Section** — Dedicated podcast discovery with curated categories, filtered by duration and content type.
 - **Now Playing** — Full-screen view with dynamic background, marquee animation for track details, and 20+ "Similar Tracks" suggestions (language & genre matched, with fuzzy deduplication).
 - **Smart Remix Filtering** — Automatically excludes remix/mashup content from homepage, trending, and recommendations (multi-layer filtering on client + server).
+- **Music Download** — Download any track as audio for offline listening. Available from the mini player and now playing screen. Requires login — guests are prompted to sign in.
 - **Mini Player** — Persistent mini player across all pages with progress bar, controls, and YouTube attribution.
 - **Google Sign-In** — One-click login with Google OAuth 2.0. Guest mode fully supported — auth never blocks playback.
 - **Mobile-First** — Bottom navigation bar, responsive layouts, and touch-friendly controls.
@@ -101,6 +102,7 @@ lyrix/
 │   │   │   ├── recommendationService.ts  Language-aware recommendations
 │   │   │   ├── trendingService.ts     Round-robin multi-language trending
 │   │   │   ├── mixService.ts          Smart mix generation (20+ tracks)
+│   │   │   ├── downloadService.ts     Audio stream extraction (Invidious)
 │   │   │   └── cacheService.ts        Redis caching with pattern delete
 │   │   ├── scripts/       Batch jobs (cleanup, mixes, profiles)
 │   │   └── utils/         Shared validators and helpers
@@ -116,7 +118,7 @@ lyrix/
 │   │   │   ├── search/           SearchPage, TrackCard
 │   │   │   └── auth/             AuthProvider, UserAvatar
 │   │   ├── config/        Language configuration (37 languages)
-│   │   ├── hooks/         Custom React hooks (usePlayer, etc.)
+│   │   ├── hooks/         Custom React hooks (usePlayer, useDownload, etc.)
 │   │   ├── pages/         Next.js pages (home, now-playing, playlists, preferences)
 │   │   ├── services/      API clients and telemetry
 │   │   ├── store/         Zustand global state
@@ -283,6 +285,12 @@ Open [http://localhost:3000](http://localhost:3000) to start using Lyrix.
 | `DELETE` | `/api/playlists/:id/tracks/:trackId` | Remove track |
 | `PATCH` | `/api/playlists/:id/tracks/reorder` | Reorder tracks |
 
+### Download (auth required)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/download/:videoId` | Download track audio (rate limited: 15/hr) |
+
 ### Saved Tracks (auth required)
 
 | Method | Endpoint | Description |
@@ -350,7 +358,7 @@ The hybrid model weights collaborative filtering at 65% and content-based at 35%
 - OAuth tokens delivered exclusively via HttpOnly cookies (never in redirect URLs)
 - Admin endpoints require authenticated session + server-side API key
 - CORS restricted to configured origins
-- Rate limiting: search (30/min), auth (10/min), sync (5/hr), feedback (20/hr), global (100/min)
+- Rate limiting: search (30/min), auth (10/min), download (15/hr), sync (5/hr), feedback (20/hr), global (100/min)
 - Security headers via Helmet: CSP, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`
 - Health endpoint exposes only status indicators (no internal details)
 - Sentry session replay masks all text and blocks media by default
