@@ -25,10 +25,10 @@ export async function handleDownload(
       .slice(0, 200);
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 60000);
+    const timeout = setTimeout(() => controller.abort(), 120_000);
 
     try {
-      const audioRes = await fetch(stream.streamUrl, {
+      const audioRes = await fetch(stream.proxyUrl, {
         signal: controller.signal,
       });
 
@@ -41,25 +41,24 @@ export async function handleDownload(
         "Content-Disposition",
         `attachment; filename="${encodeURIComponent(safeName)}.mp3"`
       );
-      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Content-Type", stream.mimeType || "audio/mpeg");
 
-      const contentLength = audioRes.headers.get("content-length");
-      if (contentLength) {
-        res.setHeader("Content-Length", contentLength);
+      if (stream.contentLength > 0) {
+        res.setHeader("Content-Length", String(stream.contentLength));
+      } else {
+        const cl = audioRes.headers.get("content-length");
+        if (cl) res.setHeader("Content-Length", cl);
       }
 
       const reader = audioRes.body.getReader();
-      const pump = async () => {
-        for (;;) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          if (!res.writableEnded) {
-            res.write(Buffer.from(value));
-          }
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!res.writableEnded) {
+          res.write(Buffer.from(value));
         }
-      };
+      }
 
-      await pump();
       res.end();
     } finally {
       clearTimeout(timeout);

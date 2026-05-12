@@ -1,61 +1,65 @@
-const PIPED_INSTANCES = [
-  "https://pipedapi.kavin.rocks",
-  "https://pipedapi.adminforge.de",
-  "https://pipedapi.in.projectsegfau.lt",
+const INVIDIOUS_INSTANCES = [
+  "https://invidious.f5.si",
+  "https://inv.nadeko.net",
+  "https://invidious.nerdvpn.de",
+  "https://yewtu.be",
 ];
 
-interface PipedAudioStream {
-  url: string;
-  mimeType: string;
+interface InvidiousAdaptiveFormat {
+  type: string;
   bitrate: number;
-  codec: string;
-  quality: string;
-  contentLength: number;
+  itag: number;
+  clen: string;
+  url: string;
 }
 
-interface PipedStreamResponse {
+interface InvidiousVideoResponse {
   title: string;
-  uploader: string;
-  audioStreams?: PipedAudioStream[];
+  author: string;
+  lengthSeconds: number;
+  adaptiveFormats: InvidiousAdaptiveFormat[];
 }
 
 export interface AudioStreamResult {
-  streamUrl: string;
+  proxyUrl: string;
   mimeType: string;
   title: string;
-  uploader: string;
+  artist: string;
+  duration: number;
+  contentLength: number;
 }
 
-async function tryPipedInstance(
+async function tryInstance(
   instanceUrl: string,
   videoId: string,
   signal: AbortSignal
 ): Promise<AudioStreamResult | null> {
-  const url = `${instanceUrl}/streams/${encodeURIComponent(videoId)}`;
-  const res = await fetch(url, {
+  const apiUrl = `${instanceUrl}/api/v1/videos/${encodeURIComponent(videoId)}?fields=title,author,lengthSeconds,adaptiveFormats`;
+
+  const res = await fetch(apiUrl, {
     signal,
     headers: { Accept: "application/json" },
   });
 
   if (!res.ok) return null;
 
-  const data = (await res.json()) as PipedStreamResponse;
-  const audioStreams = data.audioStreams ?? [];
-
-  if (audioStreams.length === 0) return null;
-
-  const mp4Audio = audioStreams
-    .filter((s) => s.mimeType.startsWith("audio/mp4") || s.mimeType.startsWith("audio/webm"))
+  const data = (await res.json()) as InvidiousVideoResponse;
+  const audioFormats = (data.adaptiveFormats ?? [])
+    .filter((f) => f.type.startsWith("audio/"))
     .sort((a, b) => b.bitrate - a.bitrate);
 
-  const best = mp4Audio[0] ?? audioStreams.sort((a, b) => b.bitrate - a.bitrate)[0];
-  if (!best?.url) return null;
+  if (audioFormats.length === 0) return null;
+
+  const best = audioFormats[0];
+  const proxyUrl = `${instanceUrl}/latest_version?id=${encodeURIComponent(videoId)}&itag=${best.itag}&local=true`;
 
   return {
-    streamUrl: best.url,
-    mimeType: best.mimeType,
+    proxyUrl,
+    mimeType: best.type.split(";")[0],
     title: data.title,
-    uploader: data.uploader,
+    artist: data.author,
+    duration: data.lengthSeconds,
+    contentLength: parseInt(best.clen, 10) || 0,
   };
 }
 
@@ -63,12 +67,12 @@ export async function getAudioStream(
   videoId: string
 ): Promise<AudioStreamResult | null> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(() => controller.abort(), 15_000);
 
   try {
-    for (const instance of PIPED_INSTANCES) {
+    for (const instance of INVIDIOUS_INSTANCES) {
       try {
-        const result = await tryPipedInstance(instance, videoId, controller.signal);
+        const result = await tryInstance(instance, videoId, controller.signal);
         if (result) return result;
       } catch (err) {
         if (controller.signal.aborted) break;
