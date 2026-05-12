@@ -1,9 +1,45 @@
-const INVIDIOUS_INSTANCES = [
+const HARDCODED_INSTANCES = [
+  "https://inv.thepixora.com",
   "https://invidious.f5.si",
   "https://inv.nadeko.net",
   "https://invidious.nerdvpn.de",
-  "https://yewtu.be",
 ];
+
+const INSTANCE_LIST_URL = "https://api.invidious.io/instances.json?sort_by=api,health";
+
+let cachedInstances: string[] | null = null;
+let cacheExpiry = 0;
+const CACHE_TTL = 10 * 60 * 1000;
+
+async function getInstances(): Promise<string[]> {
+  if (cachedInstances && Date.now() < cacheExpiry) {
+    return cachedInstances;
+  }
+
+  try {
+    const res = await fetch(INSTANCE_LIST_URL, {
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (res.ok) {
+      const data = (await res.json()) as [string, { api: boolean; type: string }][];
+      const live = data
+        .filter(([, info]) => info.api === true && info.type === "https")
+        .map(([url]) => url);
+
+      if (live.length > 0) {
+        const merged = [...new Set([...HARDCODED_INSTANCES, ...live])];
+        cachedInstances = merged;
+        cacheExpiry = Date.now() + CACHE_TTL;
+        return merged;
+      }
+    }
+  } catch {
+    // directory unreachable
+  }
+
+  return HARDCODED_INSTANCES;
+}
 
 interface InvidiousAdaptiveFormat {
   type: string;
@@ -53,6 +89,13 @@ async function tryInstance(
   const best = audioFormats[0];
   const proxyUrl = `${instanceUrl}/latest_version?id=${encodeURIComponent(videoId)}&itag=${best.itag}&local=true`;
 
+  const probeRes = await fetch(proxyUrl, {
+    method: "HEAD",
+    signal,
+  });
+
+  if (!probeRes.ok) return null;
+
   return {
     proxyUrl,
     mimeType: best.type.split(";")[0],
@@ -66,11 +109,12 @@ async function tryInstance(
 export async function getAudioStream(
   videoId: string
 ): Promise<AudioStreamResult | null> {
+  const instances = await getInstances();
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15_000);
+  const timeout = setTimeout(() => controller.abort(), 20_000);
 
   try {
-    for (const instance of INVIDIOUS_INSTANCES) {
+    for (const instance of instances) {
       try {
         const result = await tryInstance(instance, videoId, controller.signal);
         if (result) return result;
