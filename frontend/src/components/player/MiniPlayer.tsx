@@ -5,6 +5,7 @@ import { ArtistLink } from "@/components/ui/ArtistLink";
 import { radioService } from "@/services/radioService";
 import { usePlayer } from "@/hooks/usePlayer";
 import { useAlbumColors } from "@/hooks/useAlbumColors";
+import { useDownload } from "@/hooks/useDownload";
 import { shareService } from "@/services/shareService";
 import { motion, AnimatePresence } from "framer-motion";
 import { TrackThumbnail } from "@/components/ui/TrackThumbnail";
@@ -308,6 +309,7 @@ export function MiniPlayer() {
   const advanceQueue = useLyrixStore((s) => s.advanceQueue);
   const previousTrack = useLyrixStore((s) => s.previousTrack);
   const { stop, play, pause } = usePlayer();
+  const { download, downloading } = useDownload();
 
   useAlbumColors(current?.thumbnail ?? null);
 
@@ -522,6 +524,35 @@ export function MiniPlayer() {
                   <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
               </motion.button>
+
+              {/* Download */}
+              <motion.button
+                type="button"
+                whileHover={{ background: "var(--nav-hover-bg)" }}
+                whileTap={{ scale: 0.85 }}
+                onClick={() => {
+                  if (!current) return;
+                  void download(current.videoId, current.title);
+                }}
+                disabled={downloading}
+                className="hidden h-8 w-8 items-center justify-center rounded-lg md:flex disabled:opacity-40"
+                style={{ color: "var(--text-muted)" }}
+                aria-label="Download track"
+                title="Download"
+              >
+                {downloading ? (
+                  <svg className="h-[15px] w-[15px] animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" className="opacity-25" />
+                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                ) : (
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                )}
+              </motion.button>
               <VolumeSlider />
 
               {/* Expand */}
@@ -669,6 +700,33 @@ export function MiniPlayer() {
               >
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
+            </motion.button>
+
+            {/* Download */}
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!current) return;
+                void download(current.videoId, current.title);
+              }}
+              whileTap={{ scale: 0.85 }}
+              disabled={downloading}
+              className="flex-shrink-0 disabled:opacity-40"
+              style={{ color: "var(--text-muted)", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center" }}
+              aria-label="Download track"
+            >
+              {downloading ? (
+                <svg className="h-[18px] w-[18px] animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2.5" className="opacity-25" />
+                  <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              )}
             </motion.button>
 
             {/* Play/Pause */}

@@ -47,3 +47,11 @@ export const rebuildLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Profile rebuild is limited to once per hour. Please wait." },
 });
+
+export const downloadLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Download limit reached. Please try again later." },
+});

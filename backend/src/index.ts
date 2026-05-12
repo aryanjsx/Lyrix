@@ -30,6 +30,7 @@ import radioRouter from "./routes/radio";
 import onboardingRouter from "./routes/onboarding";
 import collectionRouter from "./routes/collection";
 import searchSuggestionsRouter from "./routes/searchSuggestions";
+import downloadRouter from "./routes/download";
 import { startCacheWarmer } from "./jobs/cacheWarmer";
 
 
@@ -283,6 +284,7 @@ app.use("/api/radio", radioRouter);
 app.use("/api/onboarding", onboardingRouter);
 app.use("/api/collection", collectionRouter);
 app.use("/api/search", searchSuggestionsRouter);
+app.use("/api/download", downloadRouter);
 
 
 Sentry.setupExpressErrorHandler(app);
