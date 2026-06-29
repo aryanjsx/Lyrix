@@ -89,13 +89,6 @@ async function tryInstance(
   const best = audioFormats[0];
   const proxyUrl = `${instanceUrl}/latest_version?id=${encodeURIComponent(videoId)}&itag=${best.itag}&local=true`;
 
-  const probeRes = await fetch(proxyUrl, {
-    method: "HEAD",
-    signal,
-  });
-
-  if (!probeRes.ok) return null;
-
   return {
     proxyUrl,
     mimeType: best.type.split(";")[0],
@@ -107,21 +100,32 @@ async function tryInstance(
 }
 
 export async function getAudioStream(
-  videoId: string
+  videoId: string,
+  excludeInstances: string[] = []
 ): Promise<AudioStreamResult | null> {
-  const instances = await getInstances();
+  const allInstances = await getInstances();
+  const instances = excludeInstances.length > 0
+    ? allInstances.filter((i) => !excludeInstances.includes(i))
+    : allInstances;
+
+  if (instances.length === 0) return null;
+
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20_000);
+  const timeout = setTimeout(() => controller.abort(), 45_000);
 
   try {
-    for (const instance of instances) {
-      try {
-        const result = await tryInstance(instance, videoId, controller.signal);
-        if (result) return result;
-      } catch (err) {
-        if (controller.signal.aborted) break;
-        console.warn(`[Download] ${instance} failed:`, (err as Error).message);
+    const BATCH = 4;
+    for (let i = 0; i < instances.length; i += BATCH) {
+      const batch = instances.slice(i, i + BATCH);
+      const results = await Promise.allSettled(
+        batch.map((inst) => tryInstance(inst, videoId, controller.signal))
+      );
+
+      for (const r of results) {
+        if (r.status === "fulfilled" && r.value) return r.value;
       }
+
+      if (controller.signal.aborted) break;
     }
     return null;
   } finally {
