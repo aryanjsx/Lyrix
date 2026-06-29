@@ -15,6 +15,7 @@
     "load:staging": "k6 run --env BASE_URL=$STAGING_URL load-tests/baseline.js"
   },
   "dependencies": {
+    "@distube/ytdl-core": "^4.16.12",
     "@prisma/client": "^5.22.0",
     "@sentry/node": "^10.51.0",
     "@types/cookie-parser": "^1.4.10",
