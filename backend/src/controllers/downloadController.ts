@@ -63,16 +63,15 @@ export async function handleDownload(
     return;
   }
 
-  const triedInstances: string[] = [];
+  const triedUrls: string[] = [];
 
   try {
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      const stream = await getAudioStream(videoId, triedInstances);
+      const stream = await getAudioStream(videoId, triedUrls);
 
       if (!stream) break;
 
-      const instanceOrigin = new URL(stream.proxyUrl).origin;
-      triedInstances.push(instanceOrigin);
+      triedUrls.push(stream.proxyUrl);
 
       if (res.headersSent) break;
 
@@ -81,7 +80,7 @@ export async function handleDownload(
 
       if (res.headersSent) break;
       console.warn(
-        `[Download] Attempt ${attempt + 1} failed for ${videoId} via ${instanceOrigin}`
+        `[Download] Attempt ${attempt + 1} failed for ${videoId}`
       );
     }
 
